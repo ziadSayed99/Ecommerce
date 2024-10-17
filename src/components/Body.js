@@ -4,6 +4,7 @@ import cash from "../cash.png";
 import delivery from "../delivery.png";
 import cs from "../cs.png";
 import { Link } from "react-router-dom";
+import { useRef, useEffect } from "react";
 
 function Body() {
   const callouts = [
@@ -43,7 +44,7 @@ function Body() {
                   />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-white ml-5 mt-2">
+                  <p className="text-base font-semibold text-white ml-5 mt-3 mb-5">
                     {callout.description}
                   </p>
                 </div>

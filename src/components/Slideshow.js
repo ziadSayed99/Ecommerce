@@ -1,27 +1,19 @@
 import "swiper/swiper-bundle.css";
 import "swiper/swiper-bundle.min.css";
 // import "../craousel.css";
-import { Fade, Zoom, Slide } from "react-slideshow-image";
-import React, { useEffect, useRef, useState } from "react";
+import { Slide } from "react-slideshow-image";
+import React, { useState } from "react";
 import "react-slideshow-image/dist/styles.css";
 import img2 from "../img2.jpg";
 import img3 from "../img3.jpg";
 
 const Slideshow = () => {
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  const ref = useRef(null);
-  useEffect(() => {
-    const observer = new ResizeObserver((entries) => {
-      const { contentRect } = entries[0];
-      setSize({ width: contentRect.width, height: contentRect.height });
-    });
+  const scrollToRef = React.useRef(null);
+  //
+  const handleClick = () => {
+    scrollToRef.current.scrollIntoView({ behavior: "smooth" });
+  };
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect(); // Cleanup on unmount
-  }, [ref]); // Only re-run when ref changes
   const images = [
     // {
     //   src: img1,
@@ -36,12 +28,6 @@ const Slideshow = () => {
       alt: "img3",
     },
   ];
-
-  const fadeProperties = {
-    arrows: false, // Disable default arrows
-    indicators: false, // Disable default indicators
-    duration: 2000,
-  };
 
   const spanStyle = {
     padding: "20px",
@@ -58,7 +44,7 @@ const Slideshow = () => {
   };
 
   return (
-    <div className="slide-container" ref={ref}>
+    <div className="slide-container">
       <Slide>
         {images.map((slideImage, index) => (
           <div key={index} className="relative">
@@ -77,7 +63,7 @@ const Slideshow = () => {
                 harsh elements of a world that doesn't care if you live or die.
               </p>
               <button
-                href="#"
+                onClick={handleClick}
                 className="slider-btn text-white bg-black py-2 px-8 rounded hover:bg-white hover:text-black hover:border-black border border-black transition duration-300"
               >
                 Shop Collection

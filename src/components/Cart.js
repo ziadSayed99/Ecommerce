@@ -1,154 +1,211 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-import { FiShoppingCart } from "react-icons/fi";
-import CardProductItem from "./CardProductItem";
-import { ShoppingCartContext } from "../context/ShoppingCartContext";
-import { Link } from "react-router-dom";
+"use client";
 
-const Cart = ({ children }) => {
-  const {
-    shoppingCart,
-    addCartItem,
-    decItemQuantitiy,
-    removeCartItem,
-    calcSum,
-    getCartItemQuantity,
-  } = useContext(ShoppingCartContext);
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  // const [total, setTotal] = useState(0);
-  // const [cartCounter, setCartCounter] = useState(0);
-  const offCanvasRef = useRef(null);
-  // const { shoppingCart } = useContext(ShoppingCartContext);
+import { useState } from "react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ShoppingCartIcon,
+  PlusIcon,
+  MinusIcon,
+} from "@heroicons/react/24/solid"; // New icons for cart and qty control
 
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      // console.log("Target", event.target, "Canvas", offCanvasRef.current);
-      // event.preventDefault();
-      if (
-        offCanvasRef.current &&
-        !offCanvasRef.current.contains(event.target)
-      ) {
-        setMenuOpen(false);
-      }
-    };
+const products = [
+  {
+    id: 1,
+    name: "Throwback Hip Bag",
+    href: "#",
+    color: "Salmon",
+    price: "$90.00",
+    quantity: 1,
+    imageSrc:
+      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
+    imageAlt:
+      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
+  },
+  {
+    id: 2,
+    name: "Medium Stuff Satchel",
+    href: "#",
+    color: "Blue",
+    price: "$32.00",
+    quantity: 1,
+    imageSrc:
+      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
+    imageAlt:
+      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
+  },
+  // More products...
+];
 
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleOutsideClick);
-      document.body.classList.add("overflow-y-hidden");
-    }
+export default function Cart() {
+  const [open, setOpen] = useState(false);
+  const [cartItems, setCartItems] = useState(products);
 
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.body.classList.remove("overflow-y-hidden");
-    };
-  }, [isMenuOpen, offCanvasRef]);
-
-  // useEffect(() => {
-  //   const handleOutsideClick = (event) => {
-  //     if (
-  //       offCanvasRef.current &&
-  //       !offCanvasRef.current.contains(event.target)
-  //     ) {
-  //       setMenuOpen(false);
-  //     }
-  //   };
-
-  //   if (isMenuOpen) {
-  //     document.addEventListener("click", handleOutsideClick);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener("click", handleOutsideClick);
-  //   };
-  // }, [isMenuOpen, offCanvasRef]);
-
-  const toggleMenu = () => {
-    setMenuOpen(!isMenuOpen);
+  // Function to increase the quantity of a product
+  const increaseQty = (id) => {
+    setCartItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
   };
-  // console.log(shoppingCart);
-  // console.log(calcSum(shoppingCart));
+
+  // Function to decrease the quantity of a product
+  const decreaseQty = (id) => {
+    setCartItems((items) =>
+      items.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
 
   return (
-    <div className="flex">
-      <div
-        className={`flex-grow p-1 overflow-y-auto font-bold ${
-          isMenuOpen ? "overflow-hidden" : ""
-        }`}
+    <div>
+      {/* Cart Icon Button */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="relative inline-flex items-center p-2 text-gray-700 hover:text-cyan-400 "
       >
-        <button
-          className="text-black focus:outline-none text-3xl hover:text-blue-500"
-          onClick={toggleMenu}
-        >
-          <FiShoppingCart />
-          {shoppingCart.length > 0 && (
-            <p className="absolute top-0 right-0 transform translate-y-1 z-10 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
-              {getCartItemQuantity()}
-            </p>
-          )}
-        </button>
+        <span className="sr-only">Open cart</span>
+        <ShoppingCartIcon className="h-8 w-8 text-gray-700 hover:text-cyan-400" />{" "}
+        {/* Bigger Cart Icon */}
+      </button>
 
-        {children}
+      {/* Cart Dialog */}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        className="relative z-10"
+      >
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
-        {/* Offcanvas Component */}
-        {isMenuOpen && (
-          <>
-            <div
-              onClick={toggleMenu}
-              className="fixed inset-0 z-50 bg-black bg-opacity-50"
-            ></div>
-            <div
-              ref={offCanvasRef}
-              className="fixed inset-y-0 right-0 overflow-y-scroll w-96 sm:w-80 z-50 bg-white p-4 shadow-md"
-              // className='fixed inset-y-0 right-0 w-96 z-50 bg-white p-4 shadow-md'
-            >
-              <h3 className="text-2xl font-semibold mb-4">Shopping Cart</h3>
-              <p className="mb-2 text-md">{getCartItemQuantity()} Items</p>
-              <div>
-                {shoppingCart && (
-                  <>
-                    <CardProductItem
-                      shoppingCart={shoppingCart}
-                      addCartItem={addCartItem}
-                      decItemQuantitiy={decItemQuantitiy}
-                      removeCartItem={removeCartItem}
-                    />
-                  </>
-                )}
-                {!shoppingCart.length ? (
-                  <p className="text-center mt-5 mb-5 ">Your Cart is empty</p>
-                ) : (
-                  <p className="text-left mt-5 mb-5 font-extrabold ">
-                    Total: {calcSum(shoppingCart)}
-                  </p>
-                )}
-              </div>
-              <div>
-                {shoppingCart.length > 0 ? (
-                  <Link
-                    to="/checkout"
-                    onClick={toggleMenu}
-                    className="text-white bg-black rounded py-2 px-28 hover:bg-slate-800"
-                  >
-                    Check Out
-                  </Link>
-                ) : (
-                  <div class="flex justify-center items-center">
-                    <button
-                      onClick={toggleMenu}
-                      class="bg-transparent hover:bg-black text-black font-semibold hover:text-white py-2 px-20 border border-black hover:border-transparent rounded"
-                    >
-                      Continue Shopping
-                    </button>
+        <div className="fixed inset-0 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+              <DialogPanel className="pointer-events-auto w-screen max-w-md">
+                <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                  <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                    <div className="flex items-start justify-between">
+                      <DialogTitle className="text-lg font-medium text-gray-900">
+                        Shopping cart
+                      </DialogTitle>
+                      <div className="ml-3 flex h-7 items-center">
+                        <button
+                          type="button"
+                          onClick={() => setOpen(false)}
+                          className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
+                        >
+                          <span className="sr-only">Close panel</span>
+                          <XMarkIcon aria-hidden="true" className="h-6 w-6" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <div className="flow-root">
+                        <ul
+                          role="list"
+                          className="-my-6 divide-y divide-gray-200"
+                        >
+                          {cartItems.map((product) => (
+                            <li key={product.id} className="flex py-6">
+                              <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                <img
+                                  src={product.imageSrc}
+                                  alt={product.imageAlt}
+                                  className="h-full w-full object-cover object-center"
+                                />
+                              </div>
+
+                              <div className="ml-4 flex flex-1 flex-col">
+                                <div>
+                                  <div className="flex justify-between text-base font-medium text-gray-900">
+                                    <h3>
+                                      <a href={product.href}>{product.name}</a>
+                                    </h3>
+                                    <p className="ml-4">{product.price}</p>
+                                  </div>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    {product.color}
+                                  </p>
+                                </div>
+                                <div className="flex flex-1 items-end justify-between text-sm">
+                                  <div className="flex items-center space-x-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => decreaseQty(product.id)}
+                                      className="p-1 text-gray-700 border rounded-md hover:bg-gray-100"
+                                    >
+                                      <MinusIcon className="h-5 w-5" />
+                                    </button>
+                                    <p className="text-gray-700">
+                                      {product.quantity}
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => increaseQty(product.id)}
+                                      className="p-1 text-gray-700 border rounded-md hover:bg-gray-100"
+                                    >
+                                      <PlusIcon className="h-5 w-5" />
+                                    </button>
+                                  </div>
+
+                                  <div className="flex">
+                                    <button
+                                      type="button"
+                                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+
+                  <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                    <div className="flex justify-between text-base font-medium text-gray-900">
+                      <p>Subtotal</p>
+                      <p>$262.00</p>
+                    </div>
+                    <p className="mt-0.5 text-sm text-gray-500">
+                      Shipping and taxes calculated at checkout.
+                    </p>
+                    <div className="mt-6">
+                      <a
+                        href="#"
+                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                      >
+                        Checkout
+                      </a>
+                    </div>
+                    <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+                      <p>
+                        or{" "}
+                        <button
+                          type="button"
+                          onClick={() => setOpen(false)}
+                          className="font-medium text-indigo-600 hover:text-indigo-500"
+                        >
+                          Continue Shopping
+                          <span aria-hidden="true"> &rarr;</span>
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </DialogPanel>
             </div>
-            <p className="text-white bg-black">0</p>
-          </>
-        )}
-        {/* End Offcanvas Component */}
-      </div>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
-};
-
-export default Cart;
+}

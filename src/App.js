@@ -1,24 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
-import { Navbar } from "./components/Navbar";
+import Navbar from "./components/Navbar";
 import { NoMatch } from "./components/NoMatch";
 import { Home } from "./components/Home";
 import Profile from "./components/Profile";
 import Products from "./components/Products";
-import { useDispatch } from "react-redux";
-import { fetchCategories } from "./store/thunks/fetchCategories";
-import { useEffect } from "react";
 import Cart from "./components/Cart";
 import { ShoppingCartProvider } from "./context/ShoppingCartContext";
 import CheckOut from "./components/CheckOut";
 
 function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
   return (
     <>
       <ShoppingCartProvider>
