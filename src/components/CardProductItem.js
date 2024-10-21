@@ -13,14 +13,9 @@ export default function CardProductItem({
   decItemQuantitiy,
   removeCartItem,
 }) {
-  // console.log(shoppingCart);
   return (
     <>
       {shoppingCart.map((item, index) => {
-        // let acc = 0;
-        // acc += item.quantity * item.price;
-        // console.log(item);
-        // console.log(shoppingCart);
         return (
           <>
             <Card className="mt-2 w-auto" key={index}>

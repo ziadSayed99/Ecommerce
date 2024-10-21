@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Cart from "./Cart";
 import AccountImg from "./AccountImg";
 import { useNavigate } from "react-router-dom";

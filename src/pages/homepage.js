@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import { Helmet } from "react-helmet";
 import HeroSection from "../components/herosection";
+import Body from "../components/Body";
+import FeaturedProducts from "../components/featuredProducts";
 
 function HomePage() {
   return (
@@ -20,18 +22,12 @@ function HomePage() {
         <section>
           <HeroSection />
         </section>
-        {/* <section>
-          <About />
+        <section className="mt-24">
+          <Body />
         </section>
-        <section>
-          <Services />
+        <section className="mt-24">
+          <FeaturedProducts />
         </section>
-        <section>
-          <Works />
-        </section>
-        <section>
-          <Contact />
-        </section> */}
       </main>
       {/* <footer>
         <Footer />
